@@ -22,25 +22,27 @@ import matplotlib.pyplot as plt
 
 # functions
 
-speed_deviation = -2
-distance_to_car = 50
+#Possible values -20..21
+speed_deviation = -20
+#Possible values 0..100
+distance_to_car = 0
 
 
 x_speed = np.arange(-20, 21, 1)
 x_distance = np.arange(0, 100, 1)
 x_throttle = np.arange(-100, 100, 1)
 
-speed_slow = fuzz.trapmf(x_speed,[-100,-100,-10,0])
-speed_right = fuzz.trapmf(x_speed, [-2, -0.5,0.5, 2])
+speed_slow = fuzz.trapmf(x_speed,[-100,-75,-10,0])
+speed_right = fuzz.trapmf(x_speed, [-2, -1,1, 2])
 speed_fast = fuzz.trapmf(x_speed, [0, 10, 100,100])
 
 distance_close = fuzz.trimf(x_distance, [0, 0, 29])
 distance_right = fuzz.trimf(x_distance, [28, 30, 33])
-distance_far = fuzz.trimf(x_distance, [32, 35, 10000000])
+distance_far = fuzz.trapmf(x_distance, [32, 50,1000 ,1000])
 
-throttle_break = fuzz.trimf(x_throttle, [-10000000, -50, 0])
+throttle_break = fuzz.trapmf(x_throttle, [-100,-100, -75, 0])
 throttle_maintain = fuzz.trimf(x_throttle, [-10, 0, 10])
-throttle_acc= fuzz.trimf(x_throttle, [0, 50, 10000000])
+throttle_acc= fuzz.trapmf(x_throttle, [0, 75, 100,100])
 
 fig, (ax0, ax1, ax2) = plt.subplots(nrows=3, figsize=(8, 9))
 
