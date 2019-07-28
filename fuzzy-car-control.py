@@ -19,14 +19,14 @@ throttle= ctrl.Consequent(np.arange(-100, 100, 1), 'Throttle')
 # Pythonic API
 throttle['break'] = fuzz.trimf(throttle.universe, [-10000000, -50, 0])
 throttle['maintain'] = fuzz.trimf(throttle.universe, [-10, 0, 10])
-throttle['high'] = fuzz.trimf(throttle.universe, [0, 50, 10000000])
+throttle['speed up'] = fuzz.trimf(throttle.universe, [0, 50, 10000000])
 
 speed_deviation['slow'] = fuzz.trimf(speed_deviation.universe, [-10000000, -10, 0])
-speed_deviation['good'] = fuzz.trimf(speed_deviation.universe, [-2, 0, 2])
+speed_deviation['right'] = fuzz.trimf(speed_deviation.universe, [-2, 0, 2])
 speed_deviation['fast'] = fuzz.trimf(speed_deviation.universe, [0, 10, 10000000])
 
 distance_from_car['close'] = fuzz.trimf(distance_from_car.universe, [-10000000, 0, 29])
-distance_from_car['okay'] = fuzz.trimf(distance_from_car.universe, [28, 30, 33])
+distance_from_car['right'] = fuzz.trimf(distance_from_car.universe, [28, 30, 33])
 distance_from_car['far'] = fuzz.trimf(distance_from_car.universe, [32, 35, 10000000])
 
 # You can see how these look with .view()
@@ -37,14 +37,14 @@ distance_from_car.view()
 throttle.view()
 
 rule1 = ctrl.Rule(speed_deviation['fast'] & distance_from_car['close'], throttle['break'])
-rule2 = ctrl.Rule(speed_deviation['slow'] & distance_from_car['far'], throttle['high'])
+rule2 = ctrl.Rule(speed_deviation['slow'] & distance_from_car['far'], throttle['speed up'])
 rule3 = ctrl.Rule(speed_deviation['slow'] & distance_from_car['close'], throttle['break'])
 rule4 = ctrl.Rule(speed_deviation['fast'] & distance_from_car['far'], throttle['break'])
-rule5 = ctrl.Rule(speed_deviation['good'] & distance_from_car['okay'], throttle['maintain'])
-rule6 = ctrl.Rule(speed_deviation['good'] & distance_from_car['close'], throttle['break'])
-rule7 = ctrl.Rule(speed_deviation['slow'] & distance_from_car['okay'], throttle['maintain'])
-rule8 = ctrl.Rule(speed_deviation['good'] & distance_from_car['far'], throttle['maintain'])
-rule9 = ctrl.Rule(speed_deviation['fast'] & distance_from_car['okay'], throttle['break'])
+rule5 = ctrl.Rule(speed_deviation['right'] & distance_from_car['right'], throttle['maintain'])
+rule6 = ctrl.Rule(speed_deviation['right'] & distance_from_car['close'], throttle['break'])
+rule7 = ctrl.Rule(speed_deviation['slow'] & distance_from_car['right'], throttle['maintain'])
+rule8 = ctrl.Rule(speed_deviation['right'] & distance_from_car['far'], throttle['maintain'])
+rule9 = ctrl.Rule(speed_deviation['fast'] & distance_from_car['right'], throttle['break'])
 
 rule1.view()
 
