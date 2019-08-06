@@ -37,6 +37,8 @@ def KnightsTour(N,start_pos,closed_loop,printtext=None):
             for t in text:
                 string += str(t)
             print(string)
+    if (start_pos[0]>=N or start_pos[1]>=N or start_pos[0]< 0 or start_pos[1] < 0):
+        raise IndexError("Start position is not valid")
     if(N<5):
         printl("There exist no solution for NxN when N<5");
     if(N%2==1 and closed_loop):
@@ -154,10 +156,14 @@ def KnightsTour(N,start_pos,closed_loop,printtext=None):
             end_positions = gen_possible_moves(start_pos)
         tour(1,path,start_pos)
     except PathFound:
+        if closed_loop:
+            start = path.index(start_pos)
+            path_from_start = path[start:]
+            path_from_start.append(path[0:start])
         return path
 
 size = 8           
-tour = KnightsTour(size,(3,3),False,False)
+tour = KnightsTour(size,(0,0),True,False)
 print(tour)
 
 speed = 0.25
