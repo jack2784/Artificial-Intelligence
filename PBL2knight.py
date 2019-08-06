@@ -153,21 +153,23 @@ def KnightsTour(N,start_pos,closed_loop,printtext=None):
         path = []
         # If closed loop solution create list for final check
         if closed_loop:
-            end_positions = gen_possible_moves(start_pos)
-        tour(1,path,start_pos)
+            end_positions = gen_possible_moves(initial_pos)
+        tour(1,path,initial_pos)
     except PathFound:
         if closed_loop:
             start = path.index(start_pos)
             path_from_start = path[start:]
-            path_from_start.append(path[0:start])
+            for x in path[0:start]:
+                path_from_start.append(x)
+            path = path_from_start
         return path
 
-size = 8           
+size = 14           
 tour = KnightsTour(size,(0,0),True,False)
 print(tour)
 
-speed = 0.25
-square_size = 50
+speed = 0.05
+square_size = 20
 if GUI_ON:
     pygame.init()
     dimensions = (square_size*size, square_size*size)
