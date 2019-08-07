@@ -30,7 +30,7 @@ class PathFound(RuntimeError):
 # return None if no path exist
 def KnightsTour(N,start_pos,closed_loop,printtext=None):
     if(printtext is None):
-        printtext = true
+        printtext = True
     def printl(*text):
         if printtext:
             string = ""
@@ -157,6 +157,7 @@ def KnightsTour(N,start_pos,closed_loop,printtext=None):
         tour(1,path,initial_pos)
     except PathFound:
         if closed_loop:
+            printl("Readjust starting point back to original position")
             start = path.index(start_pos)
             path_from_start = path[start:]
             for x in path[0:start]:
@@ -164,12 +165,12 @@ def KnightsTour(N,start_pos,closed_loop,printtext=None):
             path = path_from_start
         return path
 
-size = 14           
-tour = KnightsTour(size,(0,0),True,False)
+size = 10           
+tour = KnightsTour(size,(2,0),True)
 print(tour)
 
 speed = 0.05
-square_size = 20
+square_size = 50
 if GUI_ON:
     pygame.init()
     dimensions = (square_size*size, square_size*size)
