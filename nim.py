@@ -25,7 +25,7 @@ class Nim:
         #self.numPiles = 3
         #self.piles = [3,7,1]
         for x in range(self.numPiles):
-            self.piles.append(random.randint(1,1))
+            self.piles.append(random.randint(1,15))
         while sum(self.piles) < 2*self.numPiles + 1:
             pickPile = random.randint(0,self.numPiles-1)
             self.piles[pickPile] = self.piles[pickPile] + 1
