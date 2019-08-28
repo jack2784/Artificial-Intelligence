@@ -113,9 +113,17 @@ class Nim:
 
         # Check if picked pile is valid
         while pickPile == -1:
-            pickPile = int(
-                input("Pick a pile(0," + str(len(self.piles)-1) + "): "))
-            if self.piles[pickPile] == 0:
+            try:
+                pickPile = int(
+                    input("Pick a pile(0," + str(len(self.piles)-1) + "): "))
+            except:
+                print("You entered an invalid pile number")
+                pickPile = -1
+                continue
+            if pickPile < 0 or pickPile > len(self.piles) - 1:
+                print("You entered an invalid pile number")
+                pickPile = -1
+            elif self.piles[pickPile] == 0:
                 print("No elements in pile, pick another")
                 pickPile = -1
 
