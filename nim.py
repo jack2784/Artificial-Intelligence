@@ -37,8 +37,6 @@ class Nim:
             pickPile = random.randint(0, self.numPiles-1)
             self.piles[pickPile] = self.piles[pickPile] + 1
 
-        self.displayPiles()
-
     def displayPiles(self):
         for pile in self.piles:
             for _ in range(pile):
@@ -47,6 +45,7 @@ class Nim:
 
     def nextMove(self):
         self.piles.sort(reverse=True)
+        self.displayPiles()
         print("Piles: " + str(self.piles) + " " + str(self.xor()))
 
         if self.currentPlayer == 1:
@@ -58,7 +57,7 @@ class Nim:
             self.HumanMove()
             self.currentPlayer = 1
 
-        self.displayPiles()
+
 
     def AIMove(self):
         # AI moves according to optimal stategy
