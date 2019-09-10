@@ -26,6 +26,10 @@ class City:
         distanceX = abs(self.getX()-city.getX())
         distanceY = abs(self.getY()-city.getY())
         return math.sqrt(distanceX*distanceX+distanceY*distanceY)
+    
+    def __str__(self):
+        result = str(self.x) + ":" + str(self.y)
+        return result
 
 class CityList:
     def __init__(self):
@@ -49,15 +53,18 @@ class Tour:
             self.tour = tour
             
     def generateIndividual(self, cities):
-        for index in range(0,cities.numberOfCities()):
-            self.setCity(index,cities.getCity(index))
+        #print(cities)
+        for index in range(0,cities.numberOfCities()-1):
+            self.tour.append(cities.getCity(index))
+            #self.setCity(index,cities.getCity(index))
         random.shuffle(self.tour)
+        return self.tour
     
     def getCity(self, position):
         return self.tour[position]
     
     def setCity(self, position, city):
-        print(self.tour)
+        #print(self.tour)
         self.tour[position] = city
         self.fitness = 0
         self.distance = 0
@@ -94,10 +101,13 @@ class Population:
         self.popSize = popSize
         if initial:
             for i in range(0,popSize):
-                self.ToursList.append(Tour().generateIndividual(cities))
-                
+                t = Tour()
+                t.generateIndividual(cities)
+                self.ToursList.append(t)
+        print(self.ToursList)        
     
     def saveTour(self, index, tour):
+        print(self.ToursList)
         self.ToursList[index] = tour
         
     def getTour(self, index):
@@ -105,6 +115,7 @@ class Population:
     
     def getFittest(self):
         fittest = self.ToursList[0]
+        print(self.getTour(0))
         for index in range(1,self.popSize):
             print(self.getTour(index).getFitness())
             if fittest.getFitness() <= self.getTour(index).getFitness():
@@ -119,7 +130,7 @@ class GA:
     tournamentSize = 5
     elitism = True
     
-    def evolvePop(self, pop, cities):
+    def evolvePop(self, pop, cities):    
         newPop = Population(pop.popSize, False, cities)
         
         elitismOffset = 0
@@ -194,9 +205,12 @@ cities.addCity(City(100, 120))
 cities.addCity(City(180, 100))               
 
 pop = Population(50,True, cities)
+print(pop)
+print(cities)
 print("Initial distance: ",pop.getFittest().getDistance())
 
-pop = GA.evolvePop(pop, cities)
+ga = GA()
+pop = ga.evolvePop(pop, cities)
 for i in range(0,100):
     pop = GA.evolvePop(pop, cities)
     
