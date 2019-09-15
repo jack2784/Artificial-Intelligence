@@ -51,7 +51,7 @@ class Tour:
         self.tour = []
         self.fitness = 0
         self.distance = 0
-        
+
         if tour is not None:
             self.tour = tour
         else:
@@ -135,7 +135,7 @@ class GA:
     def evolvePop(self, pop):
         newPop = Population(pop.popSize(), False, self.citiesOrder)
         elitismOffset = 0
-        
+
         if self.elitism:
             newPop.saveTour(0, pop.getFittest())
             elitismOffset = 1
@@ -169,22 +169,23 @@ class GA:
             if not child.containsCity(parent2.getCity(parent2CityIndex)):
                 for childCityIndex in range(0, child.tourSize()):
                     if child.getCity(childCityIndex) == None:
-                        child.setCity(childCityIndex, parent2.getCity(parent2CityIndex))
+                        child.setCity(childCityIndex,
+                                      parent2.getCity(parent2CityIndex))
                         break
 
         return child
-    
+
     # Maintain genetic diversity by swap mutation
     def mutate(self, tour):
         for cityIndex in range(0, tour.tourSize()):
-            
+
             # Swaps 2 cities in a tour
             if random.random() < self.mutationRate:
                 randomCityIndex = random.randint(0, tour.tourSize() - 1)
-                
+
                 city1 = tour.getCity(cityIndex)
                 city2 = tour.getCity(randomCityIndex)
-                
+
                 tour.setCity(randomCityIndex, city1)
                 tour.setCity(cityIndex, city2)
 
@@ -214,27 +215,92 @@ def showPath(pop, generation):
     Show.show(x, y, f"Gen: {str(generation)}\nDist: {distance:.2f}")
 
 
+cityLocations = [
+    {
+        "x": 60,
+        "y": 200
+    },
+    {
+        "x": 180,
+        "y": 200
+    },
+    {
+        "x": 80,
+        "y": 180
+    },
+    {
+        "x": 140,
+        "y": 180
+    },
+    {
+        "x": 20,
+        "y": 160
+    },
+    {
+        "x": 100,
+        "y": 160
+    },
+    {
+        "x": 200,
+        "y": 160
+    },
+    {
+        "x": 140,
+        "y": 140
+    },
+    {
+        "x": 40,
+        "y": 120
+    },
+    {
+        "x": 100,
+        "y": 120
+    },
+    {
+        "x": 180,
+        "y": 100
+    },
+    {
+        "x": 60,
+        "y": 80
+    },
+    {
+        "x": 120,
+        "y": 80
+    },
+    {
+        "x": 180,
+        "y": 60
+    },
+    {
+        "x": 20,
+        "y": 40
+    },
+    {
+        "x": 100,
+        "y": 40
+    },
+    {
+        "x": 200,
+        "y": 40
+    },
+    {
+        "x": 20,
+        "y": 20
+    },
+    {
+        "x": 60,
+        "y": 20
+    },
+    {
+        "x": 160,
+        "y": 20
+    },
+]
+
 cities = CityList()
-cities.addCity(City(60, 200))
-cities.addCity(City(180, 200))
-cities.addCity(City(80, 180))
-cities.addCity(City(140, 180))
-cities.addCity(City(20, 160))
-cities.addCity(City(100, 160))
-cities.addCity(City(200, 160))
-cities.addCity(City(140, 140))
-cities.addCity(City(40, 120))
-cities.addCity(City(100, 120))
-cities.addCity(City(180, 100))
-cities.addCity(City(60, 80))
-cities.addCity(City(120, 80))
-cities.addCity(City(180, 60))
-cities.addCity(City(20, 40))
-cities.addCity(City(100, 40))
-cities.addCity(City(200, 40))
-cities.addCity(City(20, 20))
-cities.addCity(City(60, 20))
-cities.addCity(City(160, 20))
+for location in cityLocations:
+    cities.addCity(City(location["x"], location["y"]))
 
 pop = Population(20, True, cities)
 print(f"Initial distance: {pop.getFittest().getDistance()}")
