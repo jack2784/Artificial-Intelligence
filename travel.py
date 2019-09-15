@@ -13,9 +13,10 @@ from draw import Show
 
 class City:
     def __init__(self, x=None, y=None):
-        self.x = random.randint(0, 200)
-        self.y = random.randint(0, 200)
-        if x is not None and y is not None:
+        if x is None or y is None:
+            self.x = random.randint(0, 200)
+            self.y = random.randint(0, 200)
+        else:
             self.x = x
             self.y = y
 
@@ -28,7 +29,7 @@ class City:
     def distanceTo(self, city):
         distanceX = abs(self.getX() - city.getX())
         distanceY = abs(self.getY() - city.getY())
-        return math.sqrt(distanceX * distanceX + distanceY * distanceY)
+        return math.sqrt(distanceX**2 + distanceY**2)
 
 
 class CityList:
@@ -48,13 +49,13 @@ class Tour:
     def __init__(self, citiesOrder, tour=None):
         self.citiesOrder = citiesOrder
         self.tour = []
-        self.fitness = 0.0
+        self.fitness = 0
         self.distance = 0
+        
         if tour is not None:
             self.tour = tour
         else:
-            for index in range(0, self.citiesOrder.numberOfCities()):
-                self.tour.append(None)
+            self.tour = [None] * self.citiesOrder.numberOfCities()
 
     def generateIndividual(self):
         for index in range(0, self.citiesOrder.numberOfCities()):
@@ -66,7 +67,7 @@ class Tour:
 
     def setCity(self, position, city):
         self.tour[position] = city
-        self.fitness = 0.0
+        self.fitness = 0
         self.distance = 0
 
     def getFitness(self):
@@ -98,16 +99,14 @@ class Tour:
 
 
 class Population:
-    def __init__(self, popSize, initial, citiesOrder):
-        self.ToursList = []
-        for index in range(0, popSize):
-            self.ToursList.append(None)
+    def __init__(self, popSize, isInitial, citiesOrder):
+        self.ToursList = [None] * popSize
 
-        if initial:
-            for i in range(0, popSize):
-                makeTour = Tour(citiesOrder)
-                makeTour.generateIndividual()
-                self.saveTour(i, makeTour)
+        if isInitial:
+            for tourIndex in range(0, popSize):
+                tour = Tour(citiesOrder)
+                tour.generateIndividual()
+                self.saveTour(tourIndex, tour)
 
     def saveTour(self, index, tour):
         self.ToursList[index] = tour
@@ -118,7 +117,7 @@ class Population:
     def getFittest(self):
         fittest = self.ToursList[0]
         for index in range(1, self.popSize()):
-            if fittest.getFitness() <= self.getTour(index).getFitness():
+            if fittest.getFitness() < self.getTour(index).getFitness():
                 fittest = self.getTour(index)
         return fittest
 
@@ -129,27 +128,27 @@ class Population:
 class GA:
     def __init__(self, citiesOrder):
         self.citiesOrder = citiesOrder
-        self.mutation = 0.15
+        self.mutationRate = 0.15
         self.tournamentSize = 5
         self.elitism = True
 
     def evolvePop(self, pop):
         newPop = Population(pop.popSize(), False, self.citiesOrder)
-
         elitismOffset = 0
+        
         if self.elitism:
             newPop.saveTour(0, pop.getFittest())
             elitismOffset = 1
 
-        for index in range(elitismOffset, newPop.popSize()):
+        for tourIndex in range(elitismOffset, newPop.popSize()):
             parent1 = self.tournamentSelect(pop)
             parent2 = self.tournamentSelect(pop)
 
             child = self.crossover(parent1, parent2)
-            newPop.saveTour(index, child)
+            newPop.saveTour(tourIndex, child)
 
-        for index in range(elitismOffset, newPop.popSize()):
-            self.mutate(newPop.getTour(index))
+        for tourIndex in range(elitismOffset, newPop.popSize()):
+            self.mutate(newPop.getTour(tourIndex))
 
         return newPop
 
@@ -159,56 +158,60 @@ class GA:
         startPos = random.randint(0, parent1.tourSize() - 1)
         endPos = random.randint(0, parent1.tourSize() - 1)
 
-        for index in range(0, child.tourSize()):
-            if startPos < endPos and index > startPos and index < endPos:
-                child.setCity(index, parent1.getCity(index))
+        for cityIndex in range(0, child.tourSize()):
+            if startPos < endPos and cityIndex > startPos and cityIndex < endPos:
+                child.setCity(cityIndex, parent1.getCity(cityIndex))
             elif startPos > endPos:
-                if not (index < startPos and index > endPos):
-                    child.setCity(index, parent1.getCity(index))
+                if not (cityIndex < startPos and cityIndex > endPos):
+                    child.setCity(cityIndex, parent1.getCity(cityIndex))
 
-        for index in range(0, parent2.tourSize()):
-            if child.containsCity(parent2.getCity(index)) == False:
-                for i in range(0, child.tourSize()):
-                    if child.getCity(i) == None:
-                        child.setCity(i, parent2.getCity(index))
+        for parent2CityIndex in range(0, parent2.tourSize()):
+            if not child.containsCity(parent2.getCity(parent2CityIndex)):
+                for childCityIndex in range(0, child.tourSize()):
+                    if child.getCity(childCityIndex) == None:
+                        child.setCity(childCityIndex, parent2.getCity(parent2CityIndex))
                         break
 
         return child
-
+    
+    # Maintain genetic diversity by swap mutation
     def mutate(self, tour):
-        for index in range(0, tour.tourSize()):
-            if random.random() < self.mutation:
-                tourPos = random.randint(0, tour.tourSize() - 1)
-
-                city1 = tour.getCity(index)
-                city2 = tour.getCity(tourPos)
-
-                tour.setCity(tourPos, city1)
-                tour.setCity(index, city2)
+        for cityIndex in range(0, tour.tourSize()):
+            
+            # Swaps 2 cities in a tour
+            if random.random() < self.mutationRate:
+                randomCityIndex = random.randint(0, tour.tourSize() - 1)
+                
+                city1 = tour.getCity(cityIndex)
+                city2 = tour.getCity(randomCityIndex)
+                
+                tour.setCity(randomCityIndex, city1)
+                tour.setCity(cityIndex, city2)
 
     def tournamentSelect(self, pop):
         tournament = Population(self.tournamentSize, False, self.citiesOrder)
-        for index in range(0, self.tournamentSize):
-            rand = random.randint(0, pop.popSize() - 1)
-            tournament.saveTour(index, pop.getTour(rand))
+        for tourIndex in range(0, self.tournamentSize):
+            randomTourIndex = random.randint(0, pop.popSize() - 1)
+            tournament.saveTour(tourIndex, pop.getTour(randomTourIndex))
         fittest = tournament.getFittest()
         return fittest
 
 
-def showPath(generation):
+def showPath(pop, generation):
     x = []
     y = []
-    best = pop.getFittest()
-    for i in range(0, best.tourSize()):
-        city = best.getCity(i)
+    bestTour = pop.getFittest()
+
+    for i in range(0, bestTour.tourSize()):
+        city = bestTour.getCity(i)
         x.append(city.getX())
         y.append(city.getY())
 
-    city = best.getCity(0)
+    city = bestTour.getCity(0)
     x.append(city.getX())
     y.append(city.getY())
-    distance = best.getDistance()
-    Show.show(x, y, "Gen: " + str(generation) + "\nDist: " + f'{distance:.2f}')
+    distance = bestTour.getDistance()
+    Show.show(x, y, f"Gen: {str(generation)}\nDist: {distance:.2f}")
 
 
 cities = CityList()
@@ -234,20 +237,20 @@ cities.addCity(City(60, 20))
 cities.addCity(City(160, 20))
 
 pop = Population(20, True, cities)
-print("Initial distance: ", pop.getFittest().getDistance())
+print(f"Initial distance: {pop.getFittest().getDistance()}")
 
 distanceList = []
 ga = GA(cities)
 distanceList.append(pop.getFittest().getDistance())
 pop = ga.evolvePop(pop)
-for i in range(0, 100000):
+for generationIndex in range(0, 100000):
     pop = ga.evolvePop(pop)
     distanceList.append(pop.getFittest().getDistance())
-    if i % 1000 == 0:
-        showPath(i)
+    if generationIndex % 1000 == 0:
+        showPath(pop, generationIndex)
 
 print("Finished")
-print("Final distance: ", pop.getFittest().getDistance())
+print(f"Final distance: {pop.getFittest().getDistance()}")
 
 plt.plot(distanceList)
 plt.ylabel('Distance')
