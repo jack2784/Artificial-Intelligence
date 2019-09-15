@@ -56,7 +56,8 @@ class Tour:
             self.tour = tour
         else:
             self.tour = [None] * self.citiesOrder.numberOfCities()
-
+    
+    # Populates a tour with cities visited in a random order
     def generateIndividual(self):
         for index in range(0, self.citiesOrder.numberOfCities()):
             self.setCity(index, self.citiesOrder.getCity(index))
@@ -69,12 +70,14 @@ class Tour:
         self.tour[position] = city
         self.fitness = 0
         self.distance = 0
-
+    
+    # The longer the total distance of a tour, the lower the fitness
     def getFitness(self):
         if self.fitness == 0:
             self.fitness = 1 / float(self.getDistance())
         return self.fitness
 
+    # Gets the total distance of a tour
     def getDistance(self):
         if self.distance == 0:
             tourDistance = 0
@@ -97,7 +100,6 @@ class Tour:
             return True
         return False
 
-
 class Population:
     def __init__(self, popSize, isInitial, citiesOrder):
         self.ToursList = [None] * popSize
@@ -113,7 +115,8 @@ class Population:
 
     def getTour(self, index):
         return self.ToursList[index]
-
+    
+    # Finds the best tour in the population
     def getFittest(self):
         fittest = self.ToursList[0]
         for index in range(1, self.popSize()):
@@ -132,10 +135,13 @@ class GA:
         self.tournamentSize = 5
         self.elitism = True
 
+    # Creates a population of next generation using ordered crossover
     def evolvePop(self, pop):
         newPop = Population(pop.popSize(), False, self.citiesOrder)
         elitismOffset = 0
-
+        
+        # Includes the fittest tour from the previous population
+        # if 'elitism' is enabled
         if self.elitism:
             newPop.saveTour(0, pop.getFittest())
             elitismOffset = 1
@@ -152,6 +158,8 @@ class GA:
 
         return newPop
 
+    # Randomly selects number of cities from parent1 keeping the order they're visited in,
+    # the rest of the cities for the child tour is then selected from parent2
     def crossover(self, parent1, parent2):
         child = Tour(self.citiesOrder)
 
@@ -175,7 +183,7 @@ class GA:
 
         return child
 
-    # Maintain genetic diversity by swap mutation
+    # Maintains genetic diversity of an individual(tour) by swap mutation
     def mutate(self, tour):
         for cityIndex in range(0, tour.tourSize()):
 
@@ -188,7 +196,9 @@ class GA:
 
                 tour.setCity(randomCityIndex, city1)
                 tour.setCity(cityIndex, city2)
-
+    
+    # Randomly selects 'tournamentSize' tours from the previous population
+    # and gets the fittest tour from that subset
     def tournamentSelect(self, pop):
         tournament = Population(self.tournamentSize, False, self.citiesOrder)
         for tourIndex in range(0, self.tournamentSize):
@@ -298,13 +308,16 @@ cityLocations = [
     },
 ]
 
+# Keep the record of all cities
 cities = CityList()
 for location in cityLocations:
     cities.addCity(City(location["x"], location["y"]))
 
+# Creates an initial population
 pop = Population(20, True, cities)
 print(f"Initial distance: {pop.getFittest().getDistance()}")
 
+# Evolves the population over n generations
 distanceList = []
 ga = GA(cities)
 distanceList.append(pop.getFittest().getDistance())
