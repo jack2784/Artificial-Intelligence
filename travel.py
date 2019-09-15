@@ -322,10 +322,10 @@ distanceList = []
 ga = GA(cities)
 distanceList.append(pop.getFittest().getDistance())
 pop = ga.evolvePop(pop)
-for generationIndex in range(0, 100000):
+for generationIndex in range(1, 10001):
     pop = ga.evolvePop(pop)
     distanceList.append(pop.getFittest().getDistance())
-    if generationIndex % 1000 == 0:
+    if generationIndex % 500 == 0 or generationIndex == 1:
         showPath(pop, generationIndex)
 
 print("Finished")
