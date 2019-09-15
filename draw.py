@@ -40,18 +40,17 @@ class MyLine(lines.Line2D):
         lines.Line2D.draw(self, renderer)
         self.text.draw(renderer)
 
-class Show():        
-    def show(x, y , distance):
+
+class Show():
+    def show(x, y, distance):
         fig, ax = plt.subplots()
-        ax.set_xlim([-10,220])
-        ax.set_ylim([-10,220])
+        ax.set_xlim([-10, 220])
+        ax.set_ylim([-10, 220])
         line = MyLine(x, y)
         #line.text.set_text('line label')
         line.text.set_color('red')
         line.text.set_fontsize(8)
-        
+
         ax.add_line(line)
-        ax.text(0,-2,distance)
+        ax.text(0, -2, distance)
         plt.show()
-
-

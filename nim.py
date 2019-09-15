@@ -33,8 +33,8 @@ class Nim:
             self.piles.append(random.randint(1, 15))
 
         # Add elements if not at least 2n+1
-        while sum(self.piles) < 2*self.numPiles + 1:
-            pickPile = random.randint(0, self.numPiles-1)
+        while sum(self.piles) < 2 * self.numPiles + 1:
+            pickPile = random.randint(0, self.numPiles - 1)
             self.piles[pickPile] = self.piles[pickPile] + 1
 
     def displayPiles(self):
@@ -57,8 +57,6 @@ class Nim:
             self.HumanMove()
             self.currentPlayer = 1
 
-
-
     def AIMove(self):
         # AI moves according to optimal stategy
         xor = self.xor()
@@ -69,7 +67,7 @@ class Nim:
             pickPile = 0
 
             while pileSize == 0:
-                pickPile = random.randint(0, self.numPiles-1)
+                pickPile = random.randint(0, self.numPiles - 1)
                 pileSize = self.piles[pickPile]
 
             self.piles[pickPile] = self.piles[pickPile] - 1
@@ -82,7 +80,7 @@ class Nim:
             if self.type == 2:
                 numOfOnes = self.piles.count(1)
 
-                if len(self.piles)-self.piles.count(0)-numOfOnes == 1:
+                if len(self.piles) - self.piles.count(0) - numOfOnes == 1:
                     if numOfOnes % 2 == 0:
                         self.piles[maxIndex] = 1
                     else:
@@ -90,7 +88,7 @@ class Nim:
                     return 1
 
             # Find the value corresponding to the largest unbalanced bit
-            xor = pow(2, len(bin(xor))-3)
+            xor = pow(2, len(bin(xor)) - 3)
 
             # Find largest pile contribution to the "unbalanced" state
             for x in self.piles:
@@ -114,7 +112,7 @@ class Nim:
         while pickPile == -1:
             try:
                 pickPile = int(
-                    input("Pick a pile(0," + str(len(self.piles)-1) + "): "))
+                    input("Pick a pile(0," + str(len(self.piles) - 1) + "): "))
             except:
                 print("You entered an invalid pile number")
                 pickPile = -1
@@ -129,7 +127,8 @@ class Nim:
         # Check if number of elements is valid
         while pickNumber > self.piles[pickPile] or pickNumber < 1:
             pickNumber = int(
-                input("Pick number to take from pile(1," + str(self.piles[pickPile]) + "): "))
+                input("Pick number to take from pile(1," +
+                      str(self.piles[pickPile]) + "): "))
 
         self.piles[pickPile] -= pickNumber
 
